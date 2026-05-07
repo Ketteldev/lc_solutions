@@ -1,43 +1,34 @@
 defmodule Solution do
   @spec max_value(nums :: [integer]) :: [integer]
   def max_value(nums) do
-    nums
-    |> local_max_vals()
-    |> apply_local_max()
-    |> Enum.map(fn [lm | _] = list -> List.duplicate(lm, Enum.count(list)) end)
-    |> Enum.reverse()
-    |> List.flatten()
+    tuple_nums = List.to_tuple(nums)
+
+    prefix_max =
+      nums
+      |> Enum.scan(fn val, acc -> max(val, acc) end)
+      |> List.to_tuple()
+
+    Enum.reduce((tuple_size(tuple_nums) - 1)..0, {[], Enum.max(nums), :infinity}, fn i, {acc, next_ans, suffix_minimum} ->
+      current_prefix_max = elem(prefix_max, i)
+      value_at_i = elem(tuple_nums, i)
+
+      max_reachable_from_i =
+        if greater_than?(current_prefix_max, suffix_minimum) do
+          next_ans
+        else
+          current_prefix_max
+        end
+
+      updated_suffix_minimum = min_val(value_at_i, suffix_minimum)
+
+      {[max_reachable_from_i | acc], max_reachable_from_i, updated_suffix_minimum}
+    end)
+    |> elem(0)
   end
 
-  defp apply_local_max([curr | rest]) do
-    case append(rest, curr) do
-      {new_curr, []} ->
-        new_curr
+  defp greater_than?(_val, :infinity), do: false
+  defp greater_than?(val, num), do: val > num
 
-      {new_curr, remaining} ->
-        stuffs = apply_local_max(remaining)
-        [new_curr | stuffs]
-    end
-  end
-
-  defp append([], curr), do: {[curr], []}
-  defp append([[sub_max | _] = list | rest], curr) do
-    minimum = Enum.min(curr)
-    if sub_max > minimum do
-      append(rest, curr ++ list) 
-    else
-      {curr, [list | rest]}
-    end
-  end
-
-  defp local_max_vals([]), do: []
-  defp local_max_vals(nums) do
-    {lower, upper} = Enum.split(nums, find_max_loc(nums))
-
-    [upper | local_max_vals(lower)]
-  end
-
-  defp find_max_loc(list) do
-    list |> Enum.with_index() |> Enum.max_by(fn {val, _idx} -> val end) |> elem(1)
-  end
+  defp min_val(val, :infinity), do: val
+  defp min_val(val, num), do: min(val, num)
 end
