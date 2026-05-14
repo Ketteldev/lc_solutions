@@ -4,9 +4,9 @@ defmodule Solution do
   def is_good(nums) do
     double = length(nums) - 1
 
-    seen = Enum.reduce(nums, %{}, fn num, seen -> Map.update(seen, num, 1, &(&1 + 1)) end)
+    seen = Enum.frequencies(nums)
 
-    Enum.all?(1..(double - 1), fn num -> Map.get(seen, num) == 1 end) and Map.get(seen, double) == 2
+    seen[double] == 2 and Enum.all?(1..(double-1), &(seen[&1] == 1))
   end
 end
 
