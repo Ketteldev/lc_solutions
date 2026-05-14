@@ -1,17 +1,16 @@
 defmodule Solution do
   @spec is_good(nums :: [integer()]) :: boolean()
+  def is_good([1, 1]), do: true
   def is_good(nums) do
-    nums
-    |> Enum.sort()
-    |> Enum.with_index(1)
-    |> good?()
-  end
+    double = length(nums) - 1
 
-  defp good?([{last, idx}]), do: last == idx - 1
-  defp good?([{expect, expect} | rest]), do: good?(rest)
-  defp good?(_), do: false
+    seen = Enum.reduce(nums, %{}, fn num, seen -> Map.update(seen, num, 1, &(&1 + 1)) end)
+
+    Enum.all?(1..(double - 1), fn num -> Map.get(seen, num) == 1 end) and Map.get(seen, double) == 2
+  end
 end
 
 [2, 1, 3] |> Solution.is_good() |> IO.inspect(label: "Expect `false`, got")
 [3, 4, 4, 1, 2, 1] |> Solution.is_good() |> IO.inspect(label: "Expect `false`, got")
 [1, 3, 3, 2] |> Solution.is_good() |> IO.inspect(label: "Expect `true`, got")
+[1, 1] |> Solution.is_good() |> IO.inspect(label: "Expect `true`, got")
