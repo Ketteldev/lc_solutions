@@ -3,24 +3,18 @@ defmodule Solution do
   def longest_common_prefix(arr1, arr2) do
     prefix_tree = build_prefix_tree(arr1)
 
-    Enum.reduce(arr2, 0, fn number, maximum ->
-      number |> Integer.digits() |> depth(prefix_tree) |> max(maximum)
-    end)
+    arr2
+    |> Stream.map(&Integer.digits/1)
+    |> Stream.map(&depth(&1, prefix_tree))
+    |> Enum.max()
   end
 
   defp depth([], _prefix_tree), do: 0
   defp depth([digit | digits], prefix_tree) do
     case Map.get(prefix_tree, digit) do
-      nil ->
-        0
-
-      next_prefix ->
-        if Enum.empty?(next_prefix) do
-          # Found this digit, but no more follow
-          1
-        else
-          1 + depth(digits, next_prefix)
-        end
+      nil -> 0
+      np when map_size(np) == 0 -> 1  # Empty map means digit found, do not continue
+      next_prefix -> 1 + depth(digits, next_prefix)
     end
   end
 
