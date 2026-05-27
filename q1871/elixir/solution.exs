@@ -44,10 +44,7 @@ defmodule Solution do
       current_dp_i = :array.get(i, dp_acc)
       new_dp_i = current_dp_i and (new_pre > 0)
 
-      {
-        :array.set(i, new_dp_i, dp_acc),
-        new_pre
-      }
+      {:array.set(i, new_dp_i, dp_acc), new_pre}
     end)
     |> elem(0)
     |> then(&:array.get(n - 1, &1))
