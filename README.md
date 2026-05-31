@@ -10,10 +10,10 @@ q1/
 ├── elixir/
 │   └── solution.exs
 ├── cpp/
-|   └── solution.cpp
+│   └── solution.cpp
 q2/
 ├── elixir/
-|   └── solution.exs
+│   └── solution.exs
 q3/
 └── cpp/
     └── solution.cpp
